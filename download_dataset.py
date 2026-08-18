@@ -1,12 +1,10 @@
-# download_dataset.py
-import kagglehub
 import shutil
 from pathlib import Path
-from kagglehub.clients import build_kaggle_client
-from kagglesdk.datasets.types.dataset_api_service import ApiListTreeDatasetFilesRequest
+from tempfile import TemporaryDirectory
 
-DATASET = "asaniczka/movie-identification-dataset-800-movies"
-DATASET_VERSION = 1
+import kagglehub
+
+DATASET = "asaniczka/movie-identification-dataset-800-movies/versions/1"
 DATASET_ROOT = "resized_frames"
 
 # exact folder names as they appear in the dataset
@@ -23,53 +21,20 @@ MOVIES = [
     "Whiplash (2014)",
 ]
 
-kaggle_client = build_kaggle_client().datasets.dataset_api_client
-
-
-def list_movie_files(movie):
-    """Return every frame filename in one movie directory."""
-    filenames = []
-    page_token = None
-
-    while True:
-        request = ApiListTreeDatasetFilesRequest()
-        request.owner_slug = "asaniczka"
-        request.dataset_slug = "movie-identification-dataset-800-movies"
-        request.dataset_version_number = DATASET_VERSION
-        request.path = f"{DATASET_ROOT}/{movie}"
-        request.page_size = 200
-        request.page_token = page_token
-
-        response = kaggle_client.list_tree_dataset_files(request)
-        filenames.extend(file.name for file in response.files)
-        page_token = response.next_page_token
-
-        if not page_token:
-            return filenames
-
-
-def download_movie(movie):
-    """Download one movie's frames into its local class directory."""
-    destination = Path("frames") / movie
-    destination.mkdir(parents=True, exist_ok=True)
-
-    filenames = list_movie_files(movie)
-    for filename in filenames:
-        destination_file = destination / filename
-        if destination_file.exists():
-            continue
-
-        remote_path = f"{DATASET_ROOT}/{movie}/{filename}"
-        downloaded_path = kagglehub.dataset_download(DATASET, path=remote_path)
-        shutil.copy2(downloaded_path, destination_file)
-
-    print(f"{movie}: {len(filenames)} frames ready at {destination}")
-
 
 def main():
-    for movie in MOVIES:
-        download_movie(movie)
+    frames_root = Path("frames")
+    frames_root.mkdir(exist_ok=True)
 
+    with TemporaryDirectory(prefix="movie_dataset_", dir=".") as temporary_directory:
+        dataset_path = Path(kagglehub.dataset_download(DATASET, output_dir=temporary_directory))
+        source_root = dataset_path / DATASET_ROOT
+
+        for movie in MOVIES:
+            source = source_root / movie
+            destination = frames_root / movie
+            shutil.copytree(source, destination, dirs_exist_ok=True)
+            print(f"{movie}: ready at {destination}")
 
 
 if __name__ == "__main__":
