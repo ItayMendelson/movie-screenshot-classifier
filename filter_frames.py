@@ -31,11 +31,17 @@ END_FRAMES = {
 }
 
 
-def is_near_blank(img_path, dark_thresh=15, light_thresh=240, std_thresh=8):
-    """Flag frames that are almost uniformly black or white."""
+def is_near_blank(
+    img_path, dark_thresh=15, light_thresh=240, std_thresh=8, uniform_thresh=3
+):
+    """Flag nearly uniform frames or frames that are almost black or white."""
     img = np.array(Image.open(img_path).convert("L"))
-    is_black_or_white = img.mean() < dark_thresh or img.mean() > light_thresh
-    return is_black_or_white and img.std() < std_thresh
+    brightness = img.mean()
+    variation = img.std()
+    is_black_or_white = brightness < dark_thresh or brightness > light_thresh
+    return variation < uniform_thresh or (
+        is_black_or_white and variation < std_thresh
+    )
 
 
 def is_intro_frame(img_path):
@@ -71,5 +77,5 @@ if __name__ == "__main__":
         print(
             f"{movie_dir.name}: removed {intro_removed} intro, "
             f"{credits_removed} credits, and {blank_removed} blank "
-            f"frames of {len(files)}"
+            f"frames out of {len(files)}"
         )
