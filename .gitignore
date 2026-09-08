@@ -21,3 +21,4 @@ frames/
 
 # Generated evaluation artifacts
 evaluation_runs/
+gradcam_runs/
