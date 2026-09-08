@@ -71,7 +71,9 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Visualize ResNet18 transfer model attention with Grad-CAM."
     )
-    parser.add_argument("--checkpoint", type=Path, default=Path("transfer_model.pt"))
+    parser.add_argument(
+        "--checkpoint", type=Path, default=Path("checkpoints/transfer_model.pt")
+    )
     parser.add_argument("--output-dir", type=Path, default=Path("gradcam_runs"))
     parser.add_argument("--samples-per-class", type=int, default=1)
     parser.add_argument("--seed", type=int, default=0)

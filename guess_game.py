@@ -9,7 +9,7 @@ from torchvision.transforms import v2
 from dataset import CLASSES, build_splits
 from train_transfer import IMAGE_SIZE, IMAGENET_MEAN, IMAGENET_STD, build_model
 
-CHECKPOINT = Path("transfer_model.pt")
+CHECKPOINT = Path("checkpoints/transfer_model.pt")
 
 device = torch.accelerator.current_accelerator() or torch.device("cpu")
 model = build_model(weights=None).to(device)

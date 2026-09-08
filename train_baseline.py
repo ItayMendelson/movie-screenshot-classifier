@@ -109,7 +109,7 @@ def parse_args():
     parser.add_argument(
         "--no-save",
         action="store_true",
-        help="Train without saving baseline_model.pt.",
+        help="Train without saving checkpoints/baseline_model.pt.",
     )
     parser.add_argument(
         "--smoke-test",
@@ -161,8 +161,8 @@ def main():
     if args.smoke_test or args.no_save:
         print("training complete; model not saved")
     else:
-        torch.save(model.state_dict(), "baseline_model.pt")
-        print("saved baseline_model.pt")
+        torch.save(model.state_dict(), "checkpoints/baseline_model.pt")
+        print("saved checkpoints/baseline_model.pt")
 
 
 if __name__ == "__main__":

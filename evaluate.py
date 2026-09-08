@@ -91,9 +91,9 @@ def main():
     args = parse_args()
     device = torch.accelerator.current_accelerator() or torch.device("cpu")
     checkpoint = args.checkpoint or Path(
-        "baseline_epoch_search_best.pt"
+        "checkpoints/baseline_epoch_search_best.pt"
         if args.model == "baseline"
-        else "transfer_model.pt"
+        else "checkpoints/transfer_model.pt"
     )
     output_dir = args.output_dir or Path("evaluation_runs") / checkpoint.stem
     test_loader, test_samples = build_test_loader(args.model)
