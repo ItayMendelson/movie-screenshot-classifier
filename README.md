@@ -1,4 +1,4 @@
-# movie-classifier
+# movie-screenshot-classifier
 
 ![Guess the Movie Gradio app showing a movie frame, a completed guess, and the model's prediction probabilities](docs/images/guess-the-movie.png)
 
