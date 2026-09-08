@@ -50,7 +50,7 @@ flowchart TD
     transfernb["train_transfer<br/>notebook (Colab GPU)"]
 
     download --> filter --> splits
-    splits --> baseline & transfer & color
+    splits --> color
     splits --> tunenb & transfernb
     tunenb -.->|epoch count| baseline
     transfernb -.->|Colab alternative| transfer
