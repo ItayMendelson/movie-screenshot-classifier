@@ -5,7 +5,8 @@
 A CNN that looks at a single frame from a movie and guesses which film it is from. Trained on ten movies with very different visual identities, from the colorful La La Land (my favorite movie of 2016!) to the cold blue of Interstellar to the neon green of The Matrix.
 
 This contains a small pipeline covering dataset curation, a from-scratch baseline, transfer learning, evaluation, and a couple of sanity checks to make sure the model is learning something real.
-If you've ever paused a movie halfway through and known exactly what you were watching from the color grading alone, this project is basically that instinct, turned into a neural network.
+
+If you've ever walked by the TV when a movie was halfway through and known exactly what's being played, this project is basically that instinct, turned into a neural network for learning purposes.
 
 ## Results
 
@@ -19,7 +20,9 @@ The color-only baseline scoring close to the from-scratch CNN is a real finding,
 
 Why the histogram edges out TinyCNN specifically:
 
- TinyCNN has to learn its own filters from scratch on about 6,400 training frames, a small dataset for a convolutional network to discover useful spatial patterns in rather than just memorizing noise. On a task this color-dominated, TinyCNN likely spends a lot of that limited capacity re-deriving the same color signal the histogram gets for free, with less left over to find anything past it, compared to the histogram which always converges to the same solution. 
+ TinyCNN has to learn its own filters from scratch on about 6,400 training frames, a small dataset for a convolutional network to discover useful spatial patterns in rather than just memorizing noise. 
+ 
+ On a task this color-dominated, TinyCNN likely spends a lot of that limited capacity re-deriving the same color signal the histogram gets for free, with less left over to find anything past it, compared to the histogram which always converges to the same solution. 
 
 ## Setup
 
@@ -63,12 +66,19 @@ All three models use the same splits. Evaluation, Grad-CAM, and the Gradio game 
 Each stage is a standalone script, run in this order:
 
 1. **`uv run python download_dataset.py`** downloads frames for the ten chosen movies from Kaggle into `frames/`.
+
 2. **`uv run python filter_frames.py`** deletes opening credits, closing credits, and near-blank frames in place. Destructive, run once per fresh download.
+
 3. **`uv run python train_baseline.py`** trains a tiny CNN from scratch as a floor to beat. Saves `checkpoints/baseline_model.pt`.
+
 4. **`uv run python train_transfer.py`** trains a frozen ResNet18 with a new linear head on top. This is the real model. Saves `checkpoints/transfer_model.pt`.
+
 5. **`uv run python evaluate.py --model transfer`** runs the held-out test set through a checkpoint and writes a confusion matrix plus accuracy to `evaluation_runs/`. Use `--model baseline` for the TinyCNN instead.
+
 6. **`uv run python color_baseline.py`** is the color-only sanity check described above, no CNN involved.
+
 7. **`uv run python gradcam.py`** generates Grad-CAM heatmaps showing which pixels the transfer model actually looked at, saved to `gradcam_runs/`.
+
 8. **`uv run python guess_game.py`** launches a Gradio app at `http://127.0.0.1:7860`. Look at a frame, guess the movie, then see how you stack up against the model.
 
 `dataset.py` is used by the other files: it builds the train, validation, and test split (grouped by clip so near-duplicate frames never leak across splits) and caches the result to `.splits_cache.json` so repeated runs skip the expensive part.
