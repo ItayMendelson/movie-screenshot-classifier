@@ -25,3 +25,4 @@ gradcam_runs/
 .splits_cache.json
 
 # models
+checkpoints/
