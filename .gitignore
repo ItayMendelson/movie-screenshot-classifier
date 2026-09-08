@@ -22,3 +22,4 @@ frames/
 # Generated evaluation artifacts
 evaluation_runs/
 gradcam_runs/
+.splits_cache.json

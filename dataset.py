@@ -1,3 +1,4 @@
+import json
 import random
 from pathlib import Path
 
@@ -10,6 +11,7 @@ CLASSES = sorted([d.name for d in DATA_DIR.iterdir() if d.is_dir()])
 SIMILARITY_THRESHOLD = 0.5
 TARGET_BLOCK_FRAMES = 45
 GUARD_FRAMES = 1
+SPLIT_CACHE_PATH = Path(".splits_cache.json")
 
 
 def pack_groups(groups, target_frames=TARGET_BLOCK_FRAMES):
@@ -107,9 +109,32 @@ def build_split_plan(val_fraction=0.15, test_fraction=0.15, seed=0):
     return samples, groups_by_class, omitted_paths
 
 
+def frame_signature():
+    """Return a cheap signature of the current frames directory contents."""
+    return {cls: len(list((DATA_DIR / cls).glob("*.jpg"))) for cls in CLASSES}
+
+
 def build_splits(val_fraction=0.15, test_fraction=0.15, seed=0):
-    """Build deterministic per-movie train, validation, and test splits."""
+    """Build deterministic per-movie train, validation, and test splits.
+
+    Grouping frames by perceptual similarity is expensive, so the result is
+    cached to disk and reused as long as the parameters and frame counts
+    match.
+    """
+    cache_key = {
+        "val_fraction": val_fraction,
+        "test_fraction": test_fraction,
+        "seed": seed,
+        "signature": frame_signature(),
+    }
+    if SPLIT_CACHE_PATH.exists():
+        cached = json.loads(SPLIT_CACHE_PATH.read_text())
+        if cached["key"] == cache_key:
+            splits = cached["splits"]
+            return splits["train"], splits["val"], splits["test"]
+
     samples, _, _ = build_split_plan(val_fraction, test_fraction, seed)
+    SPLIT_CACHE_PATH.write_text(json.dumps({"key": cache_key, "splits": samples}))
     return samples["train"], samples["val"], samples["test"]
 
 class ScreenshotDataset(Dataset):
