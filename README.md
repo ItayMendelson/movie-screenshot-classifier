@@ -3,6 +3,7 @@
 ![Guess the Movie Gradio app showing a movie frame, a completed guess, and the model's prediction probabilities](docs/images/guess-the-movie.png)
 
 A CNN that looks at a single frame from a movie and guesses which film it is from. Trained on ten movies with very different visual identities, from the colorful La La Land (my favorite movie of 2016!) to the cold blue of Interstellar to the neon green of The Matrix.
+
 This contains a small pipeline covering dataset curation, a from-scratch baseline, transfer learning, evaluation, and a couple of sanity checks to make sure the model is learning something real.
 If you've ever paused a movie halfway through and known exactly what you were watching from the color grading alone, this project is basically that instinct, turned into a neural network.
 
@@ -16,11 +17,13 @@ If you've ever paused a movie halfway through and known exactly what you were wa
 
 The color-only baseline scoring close to the from-scratch CNN is a real finding, not a footnote: it means a lot of what a simple model picks up here is color grading, not composition. The transfer model clears both by a wider margin, so it is learning something beyond color.
 
-Why the histogram edges out TinyCNN specifically: the histogram features go straight into a logistic regression, a convex problem that always converges to the same solution. TinyCNN has to learn its own filters from scratch on about 6,400 training frames, a small dataset for a convolutional network to discover useful spatial patterns in rather than just memorizing noise. On a task this color-dominated, TinyCNN likely spends a lot of that limited capacity re-deriving the same color signal the histogram gets for free, with less left over to find anything past it.
+Why the histogram edges out TinyCNN specifically:
+
+ TinyCNN has to learn its own filters from scratch on about 6,400 training frames, a small dataset for a convolutional network to discover useful spatial patterns in rather than just memorizing noise. On a task this color-dominated, TinyCNN likely spends a lot of that limited capacity re-deriving the same color signal the histogram gets for free, with less left over to find anything past it, compared to the histogram which always converges to the same solution. 
 
 ## Setup
 
-Requires Python 3.13 and [uv](https://docs.astral.sh/uv/) (much better than PIP :)
+Requires Python 3.13 and [uv](https://docs.astral.sh/uv/) (much better than PIP!)
 
 ```
 uv sync
@@ -68,9 +71,9 @@ Each stage is a standalone script, run in this order:
 7. **`uv run python gradcam.py`** generates Grad-CAM heatmaps showing which pixels the transfer model actually looked at, saved to `gradcam_runs/`.
 8. **`uv run python guess_game.py`** launches a Gradio app at `http://127.0.0.1:7860`. Look at a frame, guess the movie, then see how you stack up against the model.
 
-`dataset.py` is shared infrastructure, not something you run directly: it builds the train, validation, and test split (grouped by clip so near-duplicate frames never leak across splits) and caches the result to `.splits_cache.json` so repeated runs skip the expensive part.
+`dataset.py` is used by the other files: it builds the train, validation, and test split (grouped by clip so near-duplicate frames never leak across splits) and caches the result to `.splits_cache.json` so repeated runs skip the expensive part.
 
-## The movies
+## The movies (Each of them is highly recommended by me!)
 
 - Her (2013)
 - Interstellar (2014)
