@@ -1,0 +1,107 @@
+.gradio-container {
+    max-width: 1240px !important;
+    margin: 0 auto !important;
+    padding: 36px 32px !important;
+}
+
+#eyebrow p {
+    color: #b8753f;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+}
+
+.dark #eyebrow p {
+    color: #e5ae78;
+}
+
+#game-heading h1 {
+    font-family: Georgia, serif;
+    font-size: clamp(36px, 5vw, 58px);
+    font-weight: 400;
+    letter-spacing: -0.045em;
+    line-height: 1.1;
+}
+
+#game-heading p {
+    color: var(--body-text-color-subdued);
+    font-size: 15px;
+    margin-top: 12px;
+}
+
+#game-layout {
+    gap: 24px;
+    margin-top: 20px;
+}
+
+#movie-frame {
+    background: #08090c;
+    box-shadow: 0 18px 45px #00000026;
+}
+
+#movie-choices label {
+    border-radius: 9px;
+    background: #fdfaf6;
+    border: 1px solid #e6ddd0;
+}
+
+#movie-choices label:has(input:checked) {
+    background: #fbe6d2;
+    border-color: #c8703a;
+}
+
+.dark #movie-choices label {
+    background: #222630;
+    border: 1px solid #3a3e48;
+}
+
+.dark #movie-choices label:has(input:checked) {
+    background: #443527;
+    border-color: #e5ae78;
+}
+
+#round-result textarea {
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+#model-picks {
+    padding: 12px;
+}
+
+#model-picks .container {
+    padding: 8px;
+}
+
+#model-picks h2 {
+    font-family: Georgia, serif;
+    font-weight: 400;
+    padding: 12px 8px;
+}
+
+#model-picks .confidence-set {
+    margin-bottom: 2px;
+}
+
+#model-picks .inner-wrap {
+    flex-direction: column-reverse;
+}
+
+#model-picks .bar {
+    margin-bottom: 0;
+    margin-top: var(--size-1);
+}
+
+#model-picks dt, #model-picks dd {
+    font-family: "Segoe UI", sans-serif;
+    font-size: 12px;
+}
+
+@media (max-width: 700px) {
+    .gradio-container {
+        padding: 24px 16px !important;
+    }
+    #movie-frame {
+        height: 260px !important;
+    }
+}

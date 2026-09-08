@@ -77,20 +77,32 @@ def submit_guess(guess, score):
 
 
 with gr.Blocks(title="Guess the Movie") as demo:
+    gr.Markdown("MOVIE CLASSIFIER / THE FRAME CHALLENGE", elem_id="eyebrow")
     gr.Markdown(
-        "# Guess the Movie\nLook at the frame, pick a movie, then see how the model did."
+        "# Guess the Movie\nTen films. One frame. Can you read the scene better than the model?",
+        elem_id="game-heading",
     )
     score_state = gr.State({})
 
-    with gr.Row():
-        image = gr.Image(type="pil", label="Frame", interactive=False)
-        with gr.Column():
-            guess = gr.Radio(CLASSES, label="Your guess")
-            submit_button = gr.Button("Submit guess", variant="primary")
-            next_button = gr.Button("Next frame")
-            result_text = gr.Textbox(label="Result", lines=6, interactive=False)
+    with gr.Row(elem_id="game-layout"):
+        with gr.Column(scale=6, min_width=320):
+            image = gr.Image(
+                type="pil", label="The frame", interactive=False,
+                height=400, buttons=["fullscreen"], elem_id="movie-frame",
+            )
+            result_text = gr.Textbox(
+                label="The reveal", lines=6, interactive=False,
+                placeholder="Make your pick to reveal the movie and compare your scores.",
+                elem_id="round-result",
+            )
+        with gr.Column(scale=5, min_width=320):
+            guess = gr.Radio(CLASSES, label="Make your pick", elem_id="movie-choices")
+            with gr.Row():
+                submit_button = gr.Button("Submit and reveal", variant="primary")
+                next_button = gr.Button("Next frame")
             probabilities_label = gr.Label(
-                label="Model probabilities", num_top_classes=len(CLASSES)
+                label="The model's picks", num_top_classes=len(CLASSES),
+                elem_id="model-picks",
             )
 
     round_outputs = [image, guess, result_text, probabilities_label, submit_button, score_state]
@@ -105,4 +117,28 @@ with gr.Blocks(title="Guess the Movie") as demo:
 
 
 if __name__ == "__main__":
-    demo.launch()
+    demo.launch(
+        theme=gr.themes.Base(
+            primary_hue="orange", neutral_hue="slate",
+            font=["Segoe UI", "sans-serif"],
+        ).set(
+            body_background_fill="#faf7f2",
+            block_background_fill="#ffffff",
+            block_border_color="#e4ddd3",
+            input_background_fill="#f5f1ea",
+            button_primary_background_fill="#c8703a",
+            button_primary_background_fill_hover="#d88752",
+            button_primary_text_color="#fffaf5",
+            body_background_fill_dark="#111318",
+            block_background_fill_dark="#1b1e26",
+            block_border_color_dark="#323640",
+            input_background_fill_dark="#14171e",
+            button_primary_background_fill_dark="#e5ae78",
+            button_primary_background_fill_hover_dark="#f2c496",
+            button_primary_text_color_dark="#21180f",
+            block_radius="16px",
+            button_large_radius="12px",
+        ),
+        css=Path(__file__).with_name("guess_game.css").read_text(),
+        footer_links=[],
+    )
