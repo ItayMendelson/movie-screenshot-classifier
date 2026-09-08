@@ -36,19 +36,24 @@ uv sync
 
 ```mermaid
 flowchart TD
-    download["download_dataset.py<br/>Download frames from 10 movies"]
-    filter["filter_frames.py<br/>Remove credits and blank frames"]
-    splits["dataset.py<br/>Group similar frames into temporal blocks<br/>Train / validation / test splits"]
+    download["download_dataset.py<br/>Download 10 movies"]
+    filter["filter_frames.py<br/>Remove blank frames"]
+    splits["dataset.py<br/>Clip-grouped splits"]
     baseline["train_baseline.py<br/>TinyCNN from scratch"]
-    transfer["train_transfer.py<br/>Frozen ResNet18 + linear head"]
-    color["color_baseline.py<br/>Color histograms + logistic regression"]
-    evaluate["evaluate.py<br/>Test accuracy + confusion matrix"]
-    sanity["Compare test accuracy<br/>How much does color alone explain?"]
-    cam["gradcam.py<br/>Visualize model attention"]
-    game["guess_game.py<br/>Play against the model in Gradio"]
+    transfer["train_transfer.py<br/>Frozen ResNet18 head"]
+    color["color_baseline.py<br/>Color only, no CNN"]
+    evaluate["evaluate.py<br/>Confusion matrix"]
+    sanity["Compare accuracy<br/>Is it mostly color?"]
+    cam["gradcam.py<br/>Attention heatmaps"]
+    game["guess_game.py<br/>Play vs the model"]
+    tunenb["find_baseline_epochs<br/>notebook (Colab GPU)"]
+    transfernb["train_transfer<br/>notebook (Colab GPU)"]
 
     download --> filter --> splits
     splits --> baseline & transfer & color
+    splits --> tunenb & transfernb
+    tunenb -.->|epoch count| baseline
+    transfernb -.->|Colab alternative| transfer
     baseline & transfer --> evaluate
     evaluate & color --> sanity
     transfer --> cam & game
@@ -57,7 +62,7 @@ flowchart TD
     classDef model fill:#ede9fe,stroke:#7c3aed,color:#4c1d95
     classDef output fill:#dcfce7,stroke:#16a34a,color:#14532d
     class download,filter,splits data
-    class baseline,transfer,color model
+    class baseline,transfer,color,tunenb,transfernb model
     class evaluate,sanity,cam,game output
 ```
 
@@ -82,6 +87,13 @@ Each stage is a standalone script, run in this order:
 8. **`uv run python guess_game.py`** launches a Gradio app at `http://127.0.0.1:7860`. Look at a frame, guess the movie, then see how you stack up against the model.
 
 `dataset.py` is used by the other files: it builds the train, validation, and test split (grouped by clip so near-duplicate frames never leak across splits) and caches the result to `.splits_cache.json` so repeated runs skip the expensive part.
+
+## Training on Colab
+
+No local GPU needed. `notebooks/` holds Colab versions of the training stage. Each one mounts the project from Drive, trains on a GPU, and downloads the checkpoint back into `checkpoints/`. Both use training and validation data only; the test split stays untouched.
+
+- **`find_baseline_epochs.ipynb`** trains `TinyCNN` for up to 30 epochs with early stopping and plots the learning curves, to choose the `--epochs` value for step 3. `find_baseline_epochs_results.ipynb` is the same notebook with one run's outputs kept.
+- **`train_transfer.ipynb`** is the GPU version of step 4: same frozen ResNet18 plus linear head, same `checkpoints/transfer_model.pt`.
 
 ## The movies (Each of them is highly recommended by me!)
 
