@@ -23,5 +23,3 @@ frames/
 evaluation_runs/
 gradcam_runs/
 .splits_cache.json
-CLAUDE.md
-AGENTS.md
