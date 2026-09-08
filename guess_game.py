@@ -140,5 +140,5 @@ if __name__ == "__main__":
             button_large_radius="12px",
         ),
         css=Path(__file__).with_name("guess_game.css").read_text(),
-        footer_links=[],
+        footer_links=["settings"],
     )
